@@ -15,3 +15,6 @@ app.get('/asdf', (req, res) => {
 app.get('/abc', (req, res) => {
     res.send('가나디');
   });
+  app.get('/ggg', (req, res) => {
+    res.send('제이에');
+  });
