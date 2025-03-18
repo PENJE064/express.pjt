@@ -155,3 +155,7 @@ app.get('/abc', (req, res) => {
 app.get('/ggg', (req, res) => {
     res.send('제이에');
 });
+
+app.get('/users', (req, res) => {
+    res.json(users);
+}); 
