@@ -9,6 +9,6 @@ app.listen(PORT, () => {
 app.get('/ping', (req, res) => {
     res.send('pong');
   });
-app.get('/tic', (req, res) => {
-  res.send('tactoe');
+app.get('/asdf', (req, res) => {
+  res.send('qwerty');
 });
