@@ -269,4 +269,17 @@ app.delete('/articles/:id',(req,res)=>{
   res.send("ok")
 
   
+}) 
+
+app.put('/articles/:id',(req, res)=>{
+
+  let id = req.params.id - 1
+  let data = req.body
+  console.log(data)
+
+  articles[id]= data
+  console.log(id)
+
+  res.send("ok")
+
 })
