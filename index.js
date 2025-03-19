@@ -1,5 +1,13 @@
 const express = require('express');
 const app = express();
+
+// json으로 된 post의 바디를 읽기 위해 필요
+app.use(express.json())
+
+
+const cors = require('cors');
+app.use(cors());
+
 const PORT = 3000;
 
 const users =  [
@@ -143,7 +151,7 @@ app.listen(PORT, () => {
   console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
 });
 
-app.get('/ping', (req, res) => {
+/*app.get('/ping', (req, res) => {
     res.send('pong');
   });
 app.get('/asdf', (req, res) => {
@@ -169,15 +177,80 @@ app.get('/test',(req,res)=>{
     res.send("ok")
 });
 
+
+
+app.get('/articles', (req, res)=>{
+  res.send(req);
+
+  console.log(articles)
+}) */
+
+  /*
 app.get('/user/:id',(req,res)=>{
 
     console.log(req.params.id)
     let id = req.params.id;
-    for(let user_len = users_len ; i++){
+    for(let user_len = users_len ; i++;){
         if(users[i].id == id){
             res.send(users)
         }
     }
 
     res.send('ok')
+})
+    */
+
+
+// articles 에 있는 특정 id 를 가져오는 코드
+app.get('/articles/:id',(req,res)=>{
+
+  let article_id = req.params.id
+
+  for(let i =0; i < articles.length ; i++){
+    if(articles[i].id == article_id){
+      return res.json(articles[i]);
+
+    }
+  }
+
+  return res.json("없었습니다.")
+})
+
+
+// 게시물 가져오는 코드
+app.get('/articles', (req,res)=>{
+  return res.json(articles)
+})
+
+
+// 게시물 추가하는 코드
+app.post('/articles', (req,res)=>{
+
+  let data = req.body
+  let lastid = articles[articles.length - 1].id
+  data.id= lastid + 1
+
+  const now = new Date().toUTCString().slice(0,19)+'Z';
+  data.date = now;
+
+  articles.push(data)
+  return res.json("ok")
+})
+
+app.delete('/articles/:id', (req,res)=>{
+  
+  // :id 부분에 들어간 값(예: 3)을 req.params.id로 가져옵니다.
+  const articleId = parseInt(req.params.id, 10);
+
+  // 그 값을 사용해 articles 배열에서 해당 게시글을 찾아 삭제합니다.
+  const index = articles.findIndex(article => article.id === articleId);
+
+  if (index !== -1) {
+    // 찾은 게시글을 삭제합니다.
+    articles.splice(index, 1);
+    return res.status(200).json({ message: '게시글이 삭제되었습니다.' });
+  } else {
+    // 해당 게시글을 못 찾으면 에러를 보냅니다.
+    return res.status(404).json({ message: '해당 게시글을 찾을 수 없습니다.' });
+  }
 })
