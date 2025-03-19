@@ -237,6 +237,8 @@ app.post('/articles', (req,res)=>{
   return res.json("ok")
 })
 
+/*
+// 연습했던 delet 사용법법
 app.delete('/articles/:id', (req,res)=>{
   
   // :id 부분에 들어간 값(예: 3)을 req.params.id로 가져옵니다.
@@ -253,4 +255,18 @@ app.delete('/articles/:id', (req,res)=>{
     // 해당 게시글을 못 찾으면 에러를 보냅니다.
     return res.status(404).json({ message: '해당 게시글을 찾을 수 없습니다.' });
   }
+})
+  */
+
+// 강사님이 알려준 delet 사용방법
+app.delete('/articles/:id',(req,res)=>{
+  let id = req.params.id
+
+  console.log(id);
+  
+  articles.splice(id-1, 1);
+
+  res.send("ok")
+
+  
 })
