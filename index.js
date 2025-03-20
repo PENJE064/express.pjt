@@ -13,6 +13,8 @@ app.listen(PORT, () => {
     console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
   });
 
+
+
 app.post("/articles",(req,res)=>{
     console.log(req.body)
     let {title, content} = req.body
@@ -25,4 +27,30 @@ app.post("/articles",(req,res)=>{
           }
           res.json({id: this.lastID, title, content});
         });
+})
+
+app.get("/articles", (req, res) => {
+    db.all("SELECT * FROM articles", [], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json(rows); // Return the list of articles
+    });
+});
+
+app.get ("/articles/:id",(req,res)=>{
+    let id =req.params.id
+
+   db.get("SELECT * FROM articles WHERE id = ?", [id], (err, row) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+
+        if (!row) {
+            return res.status(404).json({ error: "Article not found" });
+        }
+
+        res.json(row); // Return the article with the matching id
+    });
+    
 })
