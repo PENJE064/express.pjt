@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-
+const secretKey = process.env.SECRET_KEY;
 // json으로 된 post의 바디를 읽기 위해 필요
 app.use(express.json())
 
