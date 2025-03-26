@@ -162,3 +162,24 @@ app.put("/articles/:id", authMiddleware, (req, res) => {
     });
 });
 
+// 글 삭제 (유저 ID 포함)
+app.delete("/articles/:id", authMiddleware, (req, res) => {
+    const articleId = req.params.id;
+    const userId = req.user.id;
+
+    // 해당 글이 존재하는지 확인
+    const checkSql = `SELECT * FROM articles WHERE id = ? AND user_id = ?`;
+    db.get(checkSql, [articleId, userId], (err, article) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!article) return res.status(403).json({ message: "삭제 권한이 없거나 게시글이 존재하지 않습니다." });
+
+        // 해당 글을 삭제
+        const deleteSql = `DELETE FROM articles WHERE id = ?`;
+        db.run(deleteSql, [articleId], function (err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ message: "게시글 삭제 성공", id: articleId });
+        });
+    });
+});
+
+
