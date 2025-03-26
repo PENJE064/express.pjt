@@ -10,6 +10,8 @@ const SECRET_KEY = "your_secret_key"; // 실제 서비스에선 더 복잡하고
 const PORT = 3000;
 require('dotenv').config();
 
+const authMiddleware = require('./authMiddleware');
+
 
 //db 연결
 const sqlite3 = require('sqlite3').verbose();
@@ -19,27 +21,8 @@ const db = new sqlite3.Database('./database.db');
 
 
 
-function authMiddleware(req, res, next) {
-    const authHeader = req.headers.authorization;
-  
-    if (!authHeader) {
-      return res.status(401).send('인증 헤더 없음');
-    }
-  
-    const token = authHeader.split(' ')[1];
-  
-    jwt.verify(token, secretKey, (err, decoded) => {
-      if (err) {
-        return res.status(401).send('토큰 검증 실패');
-      }
-  
-      // 인증 성공 시 decoded 안에 있는 사용자 정보 req에 저장
-      req.user = decoded;
-      next(); // 다음 미들웨어 or 라우터로
-    });
-  }
-  
-  
+
+
   
   
 
@@ -81,7 +64,7 @@ app.listen(PORT, () => {
 // 전체 아티클 리스트 주는 api를 만들어주세요
 // GET : /articles
 
-app.get('/articles',authMiddleware,(req, res)=>{
+app.get('/articles',(req, res)=>{
 
     db.all("SELECT * FROM articles", [], (err, rows) => {
         if (err) {
@@ -94,7 +77,7 @@ app.get('/articles',authMiddleware,(req, res)=>{
 
 // 개별 아티클을 주는 api를 만들어주세요 
 // GET : /articles/:id
-app.get('/articles/:id', authMiddleware,(req, res)=>{
+app.get('/articles/:id', (req, res)=>{
     let id = req.params.id
 
     db.get("SELECT * FROM articles WHERE id = ?", [id], (err, row) => {
