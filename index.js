@@ -1,16 +1,15 @@
 const express = require('express');
 const app = express();
+require('dotenv').config();
 // cors 문제해결
 const cors = require('cors');
 app.use(cors());
 // json으로 된 post의 바디를 읽기 위해 필요
 app.use(express.json())
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = "your_secret_key"; // 실제 서비스에선 더 복잡하고 안전하게!
+ // 실제 서비스에선 더 복잡하고 안전하게!
 const PORT = 3000;
-require('dotenv').config();
 
-const authMiddleware = require('./authMiddleware');
 
 
 //db 연결
@@ -19,10 +18,26 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./database.db');
 
 
-
-
-
-
+function authMiddleware(req, res, next) {
+    const authHeader = req.headers.authorization;
+  
+    if (!authHeader) {
+      return res.status(401).send('인증 헤더 없음');
+    }
+  
+    const token = authHeader.split(' ')[1];
+  
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        return res.status(401).send('토큰 검증 실패');
+      }
+  
+      // 인증 성공 시 decoded 안에 있는 사용자 정보 req에 저장
+      req.user = decoded;
+      next(); // 다음 미들웨어 or 라우터로
+    });
+  }
+  
   
   
 
@@ -30,7 +45,7 @@ app.listen(PORT, () => {
     console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
   });
   
-  app.post("/articles", authMiddleware,(req, res) => {
+  app.post("/articles", (req, res) => {
     // 토큰 확인
     const authHeader = req.headers.authorization;
     if (!authHeader) {
@@ -93,7 +108,7 @@ app.get('/articles/:id', (req, res)=>{
 })
 
 
-app.delete("/articles/:id",authMiddleware, (req, res)=>{
+app.delete("/articles/:id", (req, res)=>{
   const id = req.params.id
 
 
@@ -148,7 +163,7 @@ app.post('/posttest', (req, res)=>{
 
 
 // POST /articles/:id/comments 라우트
-app.post("/articles/:id/comments", (req, res) => {
+app.post("/articles/:id/comments",  (req, res) => {
   const articleId = req.params.id;
   const content = req.body.content;
   
